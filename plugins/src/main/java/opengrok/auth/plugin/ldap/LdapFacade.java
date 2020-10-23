@@ -43,6 +43,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import opengrok.auth.plugin.configuration.Configuration;
 import opengrok.auth.plugin.util.WebHook;
@@ -107,9 +108,7 @@ public class LdapFacade extends AbstractLdapProvider {
     private long errorTimestamp = 0;
     private boolean reported = false;
 
-    private final Timer ldapLookupTimer = Timer.builder("ldap.latency").
-            description("LDAP lookup latency").
-            register(Metrics.getRegistry());
+    private Timer ldapLookupTimer;
 
     /**
      * Interface for converting LDAP results into user defined types.
@@ -183,6 +182,13 @@ public class LdapFacade extends AbstractLdapProvider {
         setInterval(cfg.getInterval());
         setSearchBase(cfg.getSearchBase());
         setWebHooks(cfg.getWebHooks());
+
+        MeterRegistry registry = Metrics.getInstance().getRegistry();
+        if (registry != null) {
+            ldapLookupTimer = Timer.builder("ldap.latency").
+                    description("LDAP lookup latency").
+                    register(registry);
+        }
 
         // Anti-pattern: do some non trivial stuff in the constructor.
         prepareSearchControls(cfg.getSearchTimeout(), cfg.getCountLimit());
@@ -303,7 +309,9 @@ public class LdapFacade extends AbstractLdapProvider {
     private <T> LdapSearchResult<T> lookup(String dn, String filter, String[] attributes, AttributeMapper<T> mapper) throws LdapException {
         Instant start = Instant.now();
         LdapSearchResult<T> res = lookup(dn, filter, attributes, mapper, 0);
-        ldapLookupTimer.record(Duration.between(start, Instant.now()));
+        if (ldapLookupTimer != null) {
+            ldapLookupTimer.record(Duration.between(start, Instant.now()));
+        }
         return res;
     }
 

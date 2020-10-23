@@ -147,16 +147,6 @@ public final class RuntimeEnvironment {
     private AuthorizationFramework authFramework;
     private final Object authFrameworkLock = new Object();
 
-    private boolean indexer;
-
-    public boolean isIndexer() {
-        return indexer;
-    }
-
-    public void setIndexer(boolean indexer) {
-        this.indexer = indexer;
-    }
-
     /** Gets the thread pool used for multi-project searches. */
     public ExecutorService getSearchExecutor() {
         return lzSearchExecutor.get();
@@ -1892,12 +1882,36 @@ public final class RuntimeEnvironment {
         syncWriteConfiguration(suggesterConfig, Configuration::setSuggesterConfig);
     }
 
-    public StatsdConfig getStatsdConfig() {
+    public BaseStatsdConfig getBaseStatsdConfig() {
         return syncReadConfiguration(Configuration::getStatsdConfig);
     }
 
-    public void setStatsdConfig(StatsdConfig statsdConfig) {
-        syncWriteConfiguration(statsdConfig, Configuration::setStatsdConfig);
+    public void setBaseStatsdConfig(BaseStatsdConfig baseStatsdConfig) {
+        syncWriteConfiguration(baseStatsdConfig, Configuration::setStatsdConfig);
+    }
+
+    public BaseGraphiteConfig getBaseGraphiteConfig() {
+        return syncReadConfiguration(Configuration::getGraphiteConfig);
+    }
+
+    public void setBaseGraphiteConfig(BaseGraphiteConfig baseGraphiteConfig) {
+        syncWriteConfiguration(baseGraphiteConfig, Configuration::setGraphiteConfig);
+    }
+
+    public MeterRegistryType getWebAppMeterRegistryType() {
+        return syncReadConfiguration(Configuration::getWebAppMeterRegistryType);
+    }
+
+    public void setWebAppMeterRegistryType(MeterRegistryType registryType) {
+        syncWriteConfiguration(registryType, Configuration::setWebAppMeterRegistryType);
+    }
+
+    public MeterRegistryType getIndexerMeterRegistryType() {
+        return syncReadConfiguration(Configuration::getIndexerMeterRegistryType);
+    }
+
+    public void setIndexerAppMeterRegistryType(MeterRegistryType registryType) {
+        syncWriteConfiguration(registryType, Configuration::setIndexerMeterRegistryType);
     }
 
     /**

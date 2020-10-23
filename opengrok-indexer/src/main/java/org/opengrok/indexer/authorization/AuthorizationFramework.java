@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.opengrok.indexer.Metrics;
 import org.opengrok.indexer.configuration.Configuration;
@@ -55,27 +56,13 @@ public final class AuthorizationFramework extends PluginFramework<IAuthorization
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationFramework.class);
 
-    private final Counter authStackReloadCounter = Metrics.getRegistry().
-            counter("authorization.stack.reload");
-    private final Counter authCacheHits = Counter.builder("authorization.cache").
-            description("authorization cache hits").
-            tag("what", "hits").
-            register(Metrics.getRegistry());
-    private final Counter authCacheMisses = Counter.builder("authorization.cache").
-            description("authorization cache misses").
-            tag("what", "misses").
-            register(Metrics.getRegistry());
-    private final Counter authSessionsInvalidated = Metrics.getRegistry().
-            counter("authorization.sessions.invalidated");
+    private Counter authStackReloadCounter;
+    private Counter authCacheHits;
+    private Counter authCacheMisses;
+    private Counter authSessionsInvalidated;
 
-    private final Timer authTimerPositive = Timer.builder("authorization.latency").
-            description("authorization latency").
-            tag("outcome", "positive").
-            register(Metrics.getRegistry());
-    private final Timer authTimerNegative = Timer.builder("authorization.latency").
-            description("authorization latency").
-            tag("outcome", "negative").
-            register(Metrics.getRegistry());
+    private Timer authTimerPositive;
+    private Timer authTimerNegative;
 
     /**
      * Stack of available plugins/stacks in the order of the execution.
@@ -138,6 +125,29 @@ public final class AuthorizationFramework extends PluginFramework<IAuthorization
     public AuthorizationFramework(String path, AuthorizationStack stack) {
         super(IAuthorizationPlugin.class, path);
         this.stack = stack;
+
+        MeterRegistry registry = Metrics.getInstance().getRegistry();
+        if (registry != null) {
+            authStackReloadCounter = registry.counter("authorization.stack.reload");
+            authCacheHits = Counter.builder("authorization.cache").
+                    description("authorization cache hits").
+                    tag("what", "hits").
+                    register(registry);
+            authCacheMisses = Counter.builder("authorization.cache").
+                    description("authorization cache misses").
+                    tag("what", "misses").
+                    register(registry);
+            authSessionsInvalidated = registry.counter("authorization.sessions.invalidated");
+
+            authTimerPositive = Timer.builder("authorization.latency").
+                    description("authorization latency").
+                    tag("outcome", "positive").
+                    register(registry);
+            authTimerNegative = Timer.builder("authorization.latency").
+                    description("authorization latency").
+                    tag("outcome", "negative").
+                    register(registry);
+        }
     }
 
     /**
@@ -403,7 +413,9 @@ public final class AuthorizationFramework extends PluginFramework<IAuthorization
             lock.writeLock().unlock();
         }
 
-        authStackReloadCounter.increment();
+        if (authStackReloadCounter != null) {
+            authStackReloadCounter.increment();
+        }
 
         // clean the old stack
         removeAll(oldStack);
@@ -521,11 +533,15 @@ public final class AuthorizationFramework extends PluginFramework<IAuthorization
             m = new TreeMap<>();
         } else if ((val = m.get(entity.getName())) != null) {
             // cache hit
-            authCacheHits.increment();
+            if (authCacheHits != null) {
+                authCacheHits.increment();
+            }
             return val;
         }
 
-        authCacheMisses.increment();
+        if (authCacheMisses != null) {
+            authCacheMisses.increment();
+        }
 
         Duration duration;
         boolean overallDecision;
@@ -536,7 +552,9 @@ public final class AuthorizationFramework extends PluginFramework<IAuthorization
             HttpSession session;
             if (((session = request.getSession(false)) != null) && isSessionInvalid(session)) {
                 session.invalidate();
-                authSessionsInvalidated.increment();
+                if (authSessionsInvalidated != null) {
+                    authSessionsInvalidated.increment();
+                }
             }
             request.getSession().setAttribute(SESSION_VERSION, getPluginVersion());
 
@@ -550,9 +568,13 @@ public final class AuthorizationFramework extends PluginFramework<IAuthorization
 
         // Update the timers.
         if (overallDecision) {
-            authTimerPositive.record(duration);
+            if (authTimerPositive != null) {
+                authTimerPositive.record(duration);
+            }
         } else {
-            authTimerNegative.record(duration);
+            if (authTimerNegative != null) {
+                authTimerNegative.record(duration);
+            }
         }
 
         m.put(entity.getName(), overallDecision);

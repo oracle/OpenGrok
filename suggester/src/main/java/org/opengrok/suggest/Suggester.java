@@ -100,9 +100,9 @@ public final class Suggester implements Closeable {
 
     private final CountDownLatch initDone = new CountDownLatch(1);
 
-    private final Counter suggesterRebuildCounter;
-    private final Timer suggesterRebuildTimer;
-    private final Timer suggesterInitTimer;
+    private Counter suggesterRebuildCounter;
+    private Timer suggesterRebuildTimer;
+    private Timer suggesterInitTimer;
 
     // do NOT use fork join thread pool (work stealing thread pool) because it does not send interrupts upon cancellation
     private final ExecutorService executorService = Executors.newFixedThreadPool(
@@ -152,15 +152,17 @@ public final class Suggester implements Closeable {
         this.timeThreshold = timeThreshold;
         this.rebuildParallelismLevel = rebuildParallelismLevel;
 
-        suggesterRebuildCounter = Counter.builder("suggester.rebuild").
-                description("suggester rebuild count").
-                register(registry);
-        suggesterRebuildTimer = Timer.builder("suggester.rebuild.latency").
-                description("suggester rebuild latency").
-                register(registry);
-        suggesterInitTimer = Timer.builder("suggester.init.latency").
-                description("suggester initialization latency").
-                register(registry);
+        if (registry != null) {
+            suggesterRebuildCounter = Counter.builder("suggester.rebuild").
+                    description("suggester rebuild count").
+                    register(registry);
+            suggesterRebuildTimer = Timer.builder("suggester.rebuild.latency").
+                    description("suggester rebuild latency").
+                    register(registry);
+            suggesterInitTimer = Timer.builder("suggester.init.latency").
+                    description("suggester initialization latency").
+                    register(registry);
+        }
     }
 
     /**
@@ -187,7 +189,9 @@ public final class Suggester implements Closeable {
             }
 
             Duration duration = Duration.between(start, Instant.now());
-            suggesterInitTimer.record(duration);
+            if (suggesterInitTimer != null) {
+                suggesterInitTimer.record(duration);
+            }
             shutdownAndAwaitTermination(executor, duration, "Suggester successfully initialized");
             initDone.countDown();
         }
@@ -281,7 +285,9 @@ public final class Suggester implements Closeable {
 
         synchronized (lock) {
             Instant start = Instant.now();
-            suggesterRebuildCounter.increment();
+            if (suggesterRebuildCounter != null) {
+                suggesterRebuildCounter.increment();
+            }
             logger.log(Level.INFO, "Rebuilding the following suggesters: {0}", indexDirs);
 
             ExecutorService executor = Executors.newWorkStealingPool(rebuildParallelismLevel);
@@ -296,7 +302,9 @@ public final class Suggester implements Closeable {
             }
 
             Duration duration = Duration.between(start, Instant.now());
-            suggesterRebuildTimer.record(duration);
+            if (suggesterRebuildTimer != null) {
+                suggesterRebuildTimer.record(duration);
+            }
             shutdownAndAwaitTermination(executor, duration, "Suggesters for " + indexDirs + " were successfully rebuilt");
         }
 

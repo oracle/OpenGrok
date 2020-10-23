@@ -179,7 +179,6 @@ public final class Indexer {
             }
 
             env = RuntimeEnvironment.getInstance();
-            env.setIndexer(true);
 
             // Complete the configuration of repository types.
             List<Class<? extends Repository>> repositoryClasses
@@ -246,6 +245,7 @@ public final class Indexer {
 
             // Set updated configuration in RuntimeEnvironment.
             env.setConfiguration(cfg, subFilesList, CommandTimeoutType.INDEXER);
+            Metrics.getInstance().configure(env.getIndexerMeterRegistryType());
 
             // Check version of index(es) versus current Lucene version and exit
             // with return code upon failure.
@@ -319,7 +319,7 @@ public final class Indexer {
                 System.exit(1);
             }
 
-            Metrics.updateSubFiles(subFiles);
+            Metrics.getInstance().updateSubFiles(subFiles);
 
             // If the webapp is running with a config that does not contain
             // 'projectsEnabled' property (case of upgrade or transition

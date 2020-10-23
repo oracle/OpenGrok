@@ -318,7 +318,7 @@ public class SuggesterServiceImpl implements SuggesterService {
                 suggesterConfig.getAllowedFields(),
                 suggesterConfig.getTimeThreshold(),
                 rebuildParalleismLevel,
-                Metrics.getRegistry());
+                Metrics.getInstance().getRegistry());
 
         new Thread(() -> {
             suggester.init(getAllProjectIndexDirs());

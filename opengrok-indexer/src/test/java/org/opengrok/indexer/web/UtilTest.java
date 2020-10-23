@@ -42,6 +42,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opengrok.indexer.Metrics;
+import org.opengrok.indexer.configuration.RuntimeEnvironment;
 import org.opengrok.indexer.util.PlatformUtils;
 
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
@@ -64,6 +66,7 @@ public class UtilTest {
         // Set locale to en_US for these tests.
         savedLocale = Locale.getDefault();
         Locale.setDefault(Locale.US);
+        Metrics.getInstance().configure(RuntimeEnvironment.getInstance().getWebAppMeterRegistryType());
     }
 
     @AfterClass

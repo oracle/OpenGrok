@@ -22,6 +22,7 @@
  */
 package org.opengrok.web.servlet;
 
+import io.micrometer.prometheus.PrometheusMeterRegistry;
 import org.opengrok.indexer.Metrics;
 
 import javax.servlet.annotation.WebServlet;
@@ -38,8 +39,13 @@ public class MetricsServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        try (PrintWriter pw = resp.getWriter()) {
-            pw.print(Metrics.getPrometheusRegistry().scrape());
+        PrometheusMeterRegistry registry = Metrics.getInstance().getPrometheusRegistry();
+        if (registry != null) {
+            try (PrintWriter pw = resp.getWriter()) {
+                pw.print(registry.scrape());
+            }
+        } else {
+            resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
         }
     }
 }

@@ -23,16 +23,21 @@
 
 package org.opengrok.indexer.configuration;
 
-import io.micrometer.statsd.StatsdFlavor;
+import io.micrometer.graphite.GraphiteProtocol;
 
-/**
- * Configuration for Statsd metrics emitted by the Indexer via {@link org.opengrok.indexer.util.Statistics}.
- */
-public class StatsdConfig {
+public class BaseGraphiteConfig {
     private int port;
     private String host;
-    private boolean enabled;
-    private StatsdFlavor flavor;
+    private GraphiteProtocol protocol;
+
+    public BaseGraphiteConfig() {
+    }
+
+    public BaseGraphiteConfig(String host, int port, GraphiteProtocol protocol) {
+        this.host = host;
+        this.port = port;
+        this.protocol = protocol;
+    }
 
     public String getHost() {
         return host;
@@ -50,27 +55,32 @@ public class StatsdConfig {
         this.port = port;
     }
 
-    public StatsdFlavor getFlavor() {
-        return flavor;
-    }
-
-    public void setFlavor(StatsdFlavor flavor) {
-        this.flavor = flavor;
-    }
-
     public boolean isEnabled() {
-        return port != 0 && host != null && !host.isEmpty() && flavor != null;
+        return port != 0 && host != null && !host.isEmpty();
+    }
+
+    public void setProtocol(GraphiteProtocol protocol) {
+        this.protocol = protocol;
+    }
+
+    public GraphiteProtocol getProtocol() {
+        return protocol;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s:%d (%s)", getHost(), getPort(), getProtocol());
     }
 
     /**
      * Gets an instance version suitable for helper documentation by shifting
      * most default properties slightly.
      */
-    static StatsdConfig getForHelp() {
-        StatsdConfig res = new StatsdConfig();
+    static BaseGraphiteConfig getForHelp() {
+        BaseGraphiteConfig res = new BaseGraphiteConfig();
         res.setHost("foo.bar");
-        res.setPort(8125);
-        res.setFlavor(StatsdFlavor.ETSY);
+        res.setPort(2004);
+        res.setProtocol(GraphiteProtocol.UDP);
         return res;
     }
 }

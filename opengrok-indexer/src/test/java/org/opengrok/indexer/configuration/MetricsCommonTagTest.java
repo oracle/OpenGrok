@@ -23,22 +23,28 @@
 
 package org.opengrok.indexer.configuration;
 
-import io.micrometer.statsd.StatsdFlavor;
+import io.micrometer.core.instrument.Tag;
 import org.junit.Test;
+import org.opengrok.indexer.Metrics;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class StatsdConfigTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+public class MetricsCommonTagTest {
     @Test
-    public void testIsEnabled() {
-        StatsdConfig config = new StatsdConfig();
-        assertFalse(config.isEnabled());
-        config.setPort(3141);
-        assertFalse(config.isEnabled());
-        config.setHost("foo");
-        assertFalse(config.isEnabled());
-        config.setFlavor(StatsdFlavor.ETSY);
-        assertTrue(config.isEnabled());
+    public void testCommonTag() {
+        Metrics metrics = Metrics.getInstance();
+        assertNull(metrics.updateSubFiles(Collections.emptyList()));
+
+        List<String> subFiles = Arrays.asList("/foo", "/bar");
+        metrics.configure(MeterRegistryType.PROMETHEUS);
+        Tag tag = metrics.updateSubFiles(subFiles);
+        assertEquals(Tag.of("projects", subFiles.stream().map(s -> s.substring(1)).
+                collect(Collectors.joining(","))), tag);
     }
 }

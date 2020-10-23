@@ -32,13 +32,16 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.opengrok.indexer.Metrics;
 import org.opengrok.indexer.condition.DeliberateRuntimeException;
 import org.opengrok.indexer.configuration.Group;
 import org.opengrok.indexer.configuration.Nameable;
 import org.opengrok.indexer.configuration.Project;
+import org.opengrok.indexer.configuration.RuntimeEnvironment;
 import org.opengrok.indexer.web.DummyHttpServletRequest;
 
 @RunWith(Parameterized.class)
@@ -47,6 +50,11 @@ public class AuthorizationFrameworkTest {
     private static final Random RANDOM = new Random();
 
     private final StackSetup setup;
+
+    @BeforeClass
+    public static void testInit() {
+        Metrics.getInstance().configure(RuntimeEnvironment.getInstance().getWebAppMeterRegistryType());
+    }
 
     public AuthorizationFrameworkTest(StackSetup setup) {
         this.setup = setup;

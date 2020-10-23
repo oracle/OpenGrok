@@ -32,9 +32,12 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import javax.servlet.http.HttpSession;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengrok.indexer.Metrics;
 import org.opengrok.indexer.configuration.Project;
+import org.opengrok.indexer.configuration.RuntimeEnvironment;
 import org.opengrok.indexer.web.DummyHttpServletRequest;
 
 /**
@@ -46,6 +49,11 @@ public class AuthorizationFrameworkReloadTest {
 
     private final File pluginDirectory;
     volatile boolean runThread;
+
+    @BeforeClass
+    public static void testInit() {
+        Metrics.getInstance().configure(RuntimeEnvironment.getInstance().getWebAppMeterRegistryType());
+    }
 
     public AuthorizationFrameworkReloadTest() throws URISyntaxException {
         pluginDirectory = Paths.get(getClass().getResource("/authorization/plugins/testplugins.jar").toURI()).toFile().getParentFile();
@@ -146,7 +154,7 @@ public class AuthorizationFrameworkReloadTest {
         }
 
         // Double check that at least one reload() was done.
-        long reloads = (long) Metrics.getRegistry().counter("authorization.stack.reload").count();
+        long reloads = (long) Metrics.getInstance().getRegistry().counter("authorization.stack.reload").count();
         assertTrue(reloads > 0);
     }
 

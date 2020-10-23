@@ -88,8 +88,7 @@ public class ConfigurationHelp {
             try {
                 mthd.invoke(conf, sampleValue);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                throw new RuntimeException("error setting sample value for " +
-                    mthd);
+                throw new RuntimeException("error setting sample value " + sampleValue + " for " + mthd);
             }
 
             sample = conf.getXMLRepresentationAsString();
@@ -174,6 +173,8 @@ public class ConfigurationHelp {
             inm.add("f:user-specified-value");
             inm.add("d:user-specified-value");
             return inm;
+        } else if (paramType == MeterRegistryType.class) {
+            return MeterRegistryType.GRAPHITE;
         } else if (paramType.isEnum()) {
             for (Object value : paramType.getEnumConstants()) {
                 if (!value.equals(defaultValue)) {
@@ -183,8 +184,10 @@ public class ConfigurationHelp {
             return null;
         } else if (paramType == SuggesterConfig.class) {
             return SuggesterConfig.getForHelp();
-        } else if (paramType == StatsdConfig.class) {
-            return StatsdConfig.getForHelp();
+        } else if (paramType == BaseStatsdConfig.class) {
+            return BaseStatsdConfig.getForHelp();
+        } else if (paramType == BaseGraphiteConfig.class) {
+            return BaseGraphiteConfig.getForHelp();
         } else {
             throw new UnsupportedOperationException("getSampleValue() for " +
                 paramType + ", " + genType);

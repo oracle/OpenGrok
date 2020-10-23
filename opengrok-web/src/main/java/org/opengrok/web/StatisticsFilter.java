@@ -43,14 +43,14 @@ public class StatisticsFilter implements Filter {
 
     static final String REQUESTS_METRIC = "requests";
 
-    private final DistributionSummary requests = Metrics.getPrometheusRegistry().summary(REQUESTS_METRIC);
+    private final DistributionSummary requests = Metrics.getInstance().getRegistry().summary(REQUESTS_METRIC);
 
     private final Timer emptySearch = Timer.builder("search.latency").
             tags("outcome", "empty").
-            register(Metrics.getPrometheusRegistry());
+            register(Metrics.getInstance().getRegistry());
     private final Timer successfulSearch = Timer.builder("search.latency").
             tags("outcome", "success").
-            register(Metrics.getPrometheusRegistry());
+            register(Metrics.getInstance().getRegistry());
 
     @Override
     public void init(FilterConfig fc) throws ServletException {
@@ -89,7 +89,7 @@ public class StatisticsFilter implements Filter {
 
         Timer categoryTimer = Timer.builder("requests.latency").
                 tags("category", category, "code", String.valueOf(httpResponse.getStatus())).
-                register(Metrics.getPrometheusRegistry());
+                register(Metrics.getInstance().getRegistry());
         categoryTimer.record(duration);
 
         SearchHelper helper = (SearchHelper) config.getRequestAttribute(SearchHelper.REQUEST_ATTR);

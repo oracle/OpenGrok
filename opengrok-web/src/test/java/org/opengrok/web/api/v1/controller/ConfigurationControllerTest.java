@@ -46,7 +46,7 @@ import org.opengrok.web.api.v1.suggester.provider.service.SuggesterService;
 
 public class ConfigurationControllerTest extends OGKJerseyTest {
 
-    private RuntimeEnvironment env = RuntimeEnvironment.getInstance();
+    private final RuntimeEnvironment env = RuntimeEnvironment.getInstance();
 
     @Mock
     private SuggesterService suggesterService;

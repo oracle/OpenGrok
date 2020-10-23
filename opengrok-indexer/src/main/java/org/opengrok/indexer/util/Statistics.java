@@ -67,7 +67,7 @@ public class Statistics {
 
         logIt(logger, logLevel, msg, duration);
 
-        MeterRegistry registry = Metrics.getRegistry();
+        MeterRegistry registry = Metrics.getInstance().getRegistry();
         if (registry != null) {
             Timer.builder(meterName).
                     register(registry).

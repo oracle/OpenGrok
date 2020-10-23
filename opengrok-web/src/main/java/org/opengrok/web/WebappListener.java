@@ -55,9 +55,6 @@ public final class WebappListener
         implements ServletContextListener, ServletRequestListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebappListener.class);
-    private Timer startupTimer = Timer.builder("webapp.startup.latency").
-                description("web application startup latency").
-                register(Metrics.getPrometheusRegistry());
 
     /**
      * {@inheritDoc}
@@ -83,6 +80,8 @@ public final class WebappListener
             }
         }
 
+        Metrics.getInstance().configure(env.getWebAppMeterRegistryType());
+
         /*
          * Create a new instance of authorization framework. If the code above
          * (reading the configuration) failed then the plugin directory is
@@ -101,7 +100,10 @@ public final class WebappListener
         }
 
         env.startExpirationTimer();
-        startupTimer.record(Duration.between(start, Instant.now()));
+        Timer.builder("webapp.startup.latency").
+                description("web application startup latency").
+                register(Metrics.getInstance().getRegistry()).
+                record(Duration.between(start, Instant.now()));
     }
 
     /**

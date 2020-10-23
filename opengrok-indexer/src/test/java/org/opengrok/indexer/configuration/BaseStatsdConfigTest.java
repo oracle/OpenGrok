@@ -18,25 +18,27 @@
  */
 
 /*
- * Copyright (c) 2018, Chris Fraire <cfraire@me.com>.
+ * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
  */
 
 package org.opengrok.indexer.configuration;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import io.micrometer.statsd.StatsdFlavor;
 import org.junit.Test;
 
-/**
- * Represents a container for tests of {@link ConfigurationHelp}.
- */
-public class ConfigurationHelpTest {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class BaseStatsdConfigTest {
     @Test
-    public void shouldCreateReadableUsage() {
-        String samples = ConfigurationHelp.getSamples();
-        assertFalse("samples are not empty", samples.isEmpty());
-        assertTrue("samples contains \"<?\"", samples.contains("<?"));
-        assertTrue("samples contains \"user-defined\"",
-            samples.contains("user-defined"));
+    public void testIsEnabled() {
+        BaseStatsdConfig config = new BaseStatsdConfig();
+        assertFalse(config.isEnabled());
+        config.setPort(3141);
+        assertFalse(config.isEnabled());
+        config.setHost("foo");
+        assertFalse(config.isEnabled());
+        config.setFlavor(StatsdFlavor.ETSY);
+        assertTrue(config.isEnabled());
     }
 }
