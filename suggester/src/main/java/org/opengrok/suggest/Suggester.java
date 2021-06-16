@@ -263,7 +263,7 @@ public final class Suggester implements Closeable {
             executorService.awaitTermination(awaitTerminationTime.toMillis(), TimeUnit.MILLISECONDS);
             Duration duration = Duration.between(start, Instant.now());
             timer.record(duration);
-            LOGGER.log(Level.INFO, "{0} (took {1})", new Object[]{logMessageOnSuccess,
+            LOGGER.log(Level.FINE, "{0} (took {1})", new Object[]{logMessageOnSuccess,
                     DurationFormatUtils.formatDurationWords(duration.toMillis(),
                             true, true)});
         } catch (InterruptedException e) {
@@ -292,7 +292,7 @@ public final class Suggester implements Closeable {
             }
 
             Instant start = Instant.now();
-            LOGGER.log(Level.INFO, "Rebuilding the following suggesters: {0}", indexDirs);
+            LOGGER.log(Level.FINE, "Rebuilding the following suggesters: {0}", indexDirs);
 
             ExecutorService executor = Executors.newWorkStealingPool(rebuildParallelismLevel);
 
@@ -343,7 +343,7 @@ public final class Suggester implements Closeable {
                 }
 
                 Instant start = Instant.now();
-                LOGGER.log(Level.FINE, "Rebuilding {0}", data);
+                LOGGER.log(Level.FINER, "Rebuilding {0}", data);
                 data.rebuild();
 
                 Duration d = Duration.between(start, Instant.now());
@@ -364,7 +364,7 @@ public final class Suggester implements Closeable {
         }
 
         synchronized (lock) {
-            LOGGER.log(Level.INFO, "Removing following suggesters: {0}", names);
+            LOGGER.log(Level.FINE, "Removing following suggesters: {0}", names);
 
             for (String suggesterName : names) {
                 SuggesterProjectData collection = projectData.get(suggesterName);

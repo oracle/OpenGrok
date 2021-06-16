@@ -110,7 +110,7 @@ public class IncomingFilter implements ContainerRequestFilter, ConfigurationChan
 
     @Override
     public void onConfigurationChanged() {
-        LOGGER.log(Level.FINER, "refreshing token cache");
+        LOGGER.log(Level.FINEST, "refreshing token cache");
         setTokens(RuntimeEnvironment.getInstance().getAuthenticationTokens());
     }
 

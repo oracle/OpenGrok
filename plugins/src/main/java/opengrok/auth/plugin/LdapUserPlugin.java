@@ -105,7 +105,7 @@ public class LdapUserPlugin extends AbstractLdapPlugin {
             instance = Integer.parseInt(instance_param);
         }
 
-        LOGGER.log(Level.FINE, "LdapUser plugin loaded with filter={0}, " +
+        LOGGER.log(Level.FINER, "LdapUser plugin loaded with filter={0}, " +
                         "attributes={1}, useDN={2}, instance={3}",
                 new Object[]{ldapFilter, attributes, useDN, instance});
     }

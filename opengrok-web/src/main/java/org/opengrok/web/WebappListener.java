@@ -132,7 +132,7 @@ public final class WebappListener
                     }
                 }
             }
-            LOGGER.log(Level.FINE, "Index check for all projects done");
+            LOGGER.log(Level.FINER, "Index check for all projects done");
         } else {
             LOGGER.log(Level.FINE, "Checking index");
             try {
@@ -140,7 +140,7 @@ public final class WebappListener
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "index check failed", e);
             }
-            LOGGER.log(Level.FINE, "Index check done");
+            LOGGER.log(Level.FINER, "Index check done");
         }
     }
 

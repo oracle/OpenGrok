@@ -93,7 +93,7 @@ public class LdapFilterPlugin extends AbstractLdapPlugin {
             loadTransforms(transformsString);
         }
 
-        LOGGER.log(Level.FINE, "LdapFilter plugin loaded with filter={0}, instance={1}, transforms={2}",
+        LOGGER.log(Level.FINER, "LdapFilter plugin loaded with filter={0}, instance={1}, transforms={2}",
                 new Object[]{ldapFilter, ldapUserInstance, transforms});
     }
 
@@ -135,7 +135,7 @@ public class LdapFilterPlugin extends AbstractLdapPlugin {
         AbstractLdapProvider ldapProvider = getLdapProvider();
         try {
             if ((ldapProvider.lookupLdapContent(null, expandedFilter)) == null) {
-                LOGGER.log(Level.FINER,
+                LOGGER.log(Level.FINE,
                         "empty content for LDAP user {0} with filter ''{1}'' on {2}",
                         new Object[]{ldapUser, expandedFilter, ldapProvider});
                 return;

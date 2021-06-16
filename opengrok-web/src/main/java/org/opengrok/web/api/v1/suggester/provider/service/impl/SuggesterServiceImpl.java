@@ -157,7 +157,7 @@ public class SuggesterServiceImpl implements SuggesterService {
     /** {@inheritDoc} */
     @Override
     public void refresh() {
-        logger.log(Level.FINE, "Refreshing suggester for new configuration {0}", env.getSuggesterConfig());
+        logger.log(Level.FINER, "Refreshing suggester for new configuration {0}", env.getSuggesterConfig());
         lock.writeLock().lock();
         try {
             // close and init from scratch because many things may have changed in the configuration
@@ -309,7 +309,7 @@ public class SuggesterServiceImpl implements SuggesterService {
         if (rebuildParalleismLevel == 0) {
             rebuildParalleismLevel = 1;
         }
-        logger.log(Level.FINER, "Suggester rebuild parallelism level: " + rebuildParalleismLevel);
+        logger.log(Level.FINEST, "Suggester rebuild parallelism level: " + rebuildParalleismLevel);
         suggester = new Suggester(suggesterDir,
                 suggesterConfig.getMaxResults(),
                 Duration.ofSeconds(suggesterConfig.getBuildTerminationTime()),
@@ -367,7 +367,7 @@ public class SuggesterServiceImpl implements SuggesterService {
             return;
         }
 
-        logger.log(Level.INFO, "Scheduling suggester rebuild in {0}", timeToNextRebuild);
+        logger.log(Level.FINE, "Scheduling suggester rebuild in {0}", timeToNextRebuild);
 
         future = instance.scheduler.schedule(instance.getRebuildAllProjectsRunnable(), timeToNextRebuild.toMillis(),
                 TimeUnit.MILLISECONDS);

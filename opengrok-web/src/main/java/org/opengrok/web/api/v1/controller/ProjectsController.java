@@ -167,7 +167,7 @@ public class ProjectsController {
         projectName = Laundromat.launderInput(projectName);
 
         Project project = disableProject(projectName);
-        logger.log(Level.INFO, "deleting configuration for project {0}", projectName);
+        logger.log(Level.FINE, "deleting configuration for project {0}", projectName);
 
         // Delete index data associated with the project.
         deleteProjectData(projectName);
@@ -200,7 +200,7 @@ public class ProjectsController {
         final String projectName = Laundromat.launderInput(projectNameParam);
 
         Project project = disableProject(projectName);
-        logger.log(Level.INFO, "deleting data for project {0}", projectName);
+        logger.log(Level.FINE, "deleting data for project {0}", projectName);
 
         // Delete index and xrefs.
         for (String dirName: new String[]{IndexDatabase.INDEX_DIR, IndexDatabase.XREF_DIR}) {
@@ -229,7 +229,7 @@ public class ProjectsController {
         projectName = Laundromat.launderInput(projectName);
 
         Project project = disableProject(projectName);
-        logger.log(Level.INFO, "deleting history cache for project {0}", projectName);
+        logger.log(Level.FINE, "deleting history cache for project {0}", projectName);
 
         List<RepositoryInfo> repos = env.getProjectRepositoriesMap().get(project);
         if (repos == null || repos.isEmpty()) {

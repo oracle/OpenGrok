@@ -242,7 +242,7 @@ public class LdapServer implements Serializable {
      * @return the new connection or null
      */
     private synchronized LdapContext connect() {
-        LOGGER.log(Level.INFO, "Connecting to LDAP server {0} ", this);
+        LOGGER.log(Level.FINE, "Connecting to LDAP server {0} ", this);
 
         if (errorTimestamp > 0 && errorTimestamp + interval > System.currentTimeMillis()) {
             LOGGER.log(Level.WARNING, "LDAP server {0} is down", this.url);
@@ -269,7 +269,7 @@ public class LdapServer implements Serializable {
             try {
                 ctx = new InitialLdapContext(env, null);
                 ctx.setRequestControls(null);
-                LOGGER.log(Level.INFO, "Connected to LDAP server {0}", this);
+                LOGGER.log(Level.FINE, "Connected to LDAP server {0}", this);
                 errorTimestamp = 0;
             } catch (NamingException ex) {
                 LOGGER.log(Level.WARNING, "LDAP server {0} is not responding", env.get(Context.PROVIDER_URL));

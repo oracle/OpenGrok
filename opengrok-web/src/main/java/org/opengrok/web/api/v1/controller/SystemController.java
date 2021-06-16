@@ -78,7 +78,7 @@ public class SystemController {
     public void loadPathDescriptions(@Valid final PathDescription[] descriptions) throws IOException {
         EftarFile ef = new EftarFile();
         ef.create(Set.of(descriptions), env.getDtagsEftarPath().toString());
-        LOGGER.log(Level.INFO, "reloaded path descriptions with {0} entries", descriptions.length);
+        LOGGER.log(Level.FINE, "reloaded path descriptions with {0} entries", descriptions.length);
     }
 
     @GET

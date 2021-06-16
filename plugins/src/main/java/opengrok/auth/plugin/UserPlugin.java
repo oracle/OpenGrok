@@ -75,7 +75,7 @@ public class UserPlugin implements IAuthorizationPlugin {
                     DECODER_CLASS_PARAM, UserPlugin.class.getName()));
         }
 
-        LOGGER.log(Level.INFO, "loading decoder: {0}", decoder_name);
+        LOGGER.log(Level.FINE, "loading decoder: {0}", decoder_name);
         try {
             decoder = getDecoder(decoder_name);
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |

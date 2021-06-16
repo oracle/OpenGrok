@@ -111,7 +111,7 @@ public class LdapAttrPlugin extends AbstractLdapPlugin {
             throw new IllegalArgumentException(String.format("Unable to read the file \"%s\"", filePath), e);
         }
 
-        LOGGER.log(Level.FINE, "LdapAttrPlugin plugin loaded with attr={0}, whitelist={1} ({2} entries), " +
+        LOGGER.log(Level.FINER, "LdapAttrPlugin plugin loaded with attr={0}, whitelist={1} ({2} entries), " +
                         "instance={3}", new Object[]{ldapAttr, filePath, whitelist.size(), ldapUserInstance});
     }
 

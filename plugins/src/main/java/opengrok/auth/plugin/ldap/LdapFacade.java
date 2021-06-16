@@ -197,7 +197,7 @@ public class LdapFacade extends AbstractLdapProvider {
      * Go through all servers in the pool and record the first working.
      */
     void prepareServers() {
-        LOGGER.log(Level.FINER, "checking servers for {0}", this);
+        LOGGER.log(Level.FINEST, "checking servers for {0}", this);
         for (int i = 0; i < servers.size(); i++) {
             LdapServer server = servers.get(i);
             if (server.isWorking() && actualServer == -1) {
@@ -206,7 +206,7 @@ public class LdapFacade extends AbstractLdapProvider {
         }
 
         // Close the connections to the inactive servers.
-        LOGGER.log(Level.FINER, "closing unused servers");
+        LOGGER.log(Level.FINEST, "closing unused servers");
         for (int i = 0; i < servers.size(); i++) {
             if (i != actualServer) {
                 servers.get(i).close();
