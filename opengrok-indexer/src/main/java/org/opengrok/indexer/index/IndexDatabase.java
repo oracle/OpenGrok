@@ -495,7 +495,11 @@ public class IndexDatabase {
 
                     IndexDownArgs args = new IndexDownArgs();
                     Statistics elapsed = new Statistics();
-                    LOGGER.log(Level.INFO, "Starting traversal of directory {0}", dir);
+                    if (dir.isEmpty()) {
+                        LOGGER.log(Level.INFO, "Starting traversal of directory 'source root directory'");
+                    } else {
+                        LOGGER.log(Level.INFO, "Starting traversal of directory  \"{0}\" .", dir);
+                    }
                     indexDown(sourceRoot, dir, args);
                     elapsed.report(LOGGER, String.format("Done traversal of directory %s", dir),
                             "indexer.db.directory.traversal");
@@ -504,7 +508,11 @@ public class IndexDatabase {
 
                     args.cur_count = 0;
                     elapsed = new Statistics();
-                    LOGGER.log(Level.INFO, "Starting indexing of directory {0}", dir);
+                    if (dir.isEmpty()) {
+                        LOGGER.log(Level.INFO, "Starting indexing of directory 'source root directory'");
+                    } else {
+                        LOGGER.log(Level.INFO, "Starting indexing of directory  \"{0}\" .", dir);
+                    }
                     indexParallel(dir, args);
                     elapsed.report(LOGGER, String.format("Done indexing of directory %s", dir),
                             "indexer.db.directory.index");
